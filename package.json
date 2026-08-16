@@ -8,7 +8,9 @@
     "sync:content": "node scripts/sync-content.mjs",
     "build": "astro check && astro build",
     "validate:build": "node scripts/validate-build.mjs",
-    "preview": "astro preview"
+    "preview": "astro preview",
+    "deploy": "npm run build && wrangler deploy",
+    "deploy:temporary": "npm run build && wrangler deploy --temporary"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.4",
@@ -19,6 +21,7 @@
     "typescript": "^6.0.3"
   },
   "devDependencies": {
-    "@types/sanitize-html": "^2.16.1"
+    "@types/sanitize-html": "^2.16.1",
+    "wrangler": "^4.123.0"
   }
 }
