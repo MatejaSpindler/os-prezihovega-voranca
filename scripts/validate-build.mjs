@@ -10,6 +10,7 @@ const SCHOOL_HOSTS = [
   'ospvmb.splet.arnes.si',
   'knjiznicaospvmb.splet.arnes.si',
 ];
+const MANUAL_ROUTES = ['/', '/odjava-prehrane/'];
 
 async function collectHtml(directory) {
   const entries = await readdir(directory, { withFileTypes: true });
@@ -72,7 +73,7 @@ for (const file of htmlFiles) {
   }
 }
 
-const expectedPages = importedSite.pages.length + 1;
+const expectedPages = importedSite.pages.length + MANUAL_ROUTES.length;
 if (htmlFiles.length !== expectedPages) {
   failures.push('Expected ' + expectedPages + ' generated pages but found ' + htmlFiles.length);
 }

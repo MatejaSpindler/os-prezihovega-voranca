@@ -1,0 +1,134 @@
+---
+import {
+  ArrowLeft,
+  Clock3,
+  Mail,
+  ShieldCheck,
+  Utensils,
+} from '@lucide/astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Odjava prehrane"
+  description="Obrazec za odjavo šolske prehrane za isti dan do 8. ure zjutraj."
+>
+  <section class="page-title-band">
+    <div class="shell">
+      <nav class="breadcrumbs" aria-label="Drobtinice">
+        <a href="/">Domov</a>
+        <span aria-hidden="true">/</span>
+        <span>Odjava prehrane</span>
+      </nav>
+      <p class="eyebrow">Hitro opravilo</p>
+      <h1>Odjava prehrane</h1>
+      <p>Odjavo za današnji dan lahko pripravite do 8.00 po lokalnem času v Mariboru.</p>
+    </div>
+  </section>
+
+  <section class="cancellation-section">
+    <div class="shell cancellation-layout">
+      <form class="cancellation-form" id="meal-cancellation-form">
+        <div class="cancellation-form-heading">
+          <span><Utensils size={24} /></span>
+          <div>
+            <p class="panel-kicker">Današnja odjava</p>
+            <h2>Podatki učenca</h2>
+          </div>
+        </div>
+
+        <label class="form-field" for="student-name">
+          <span>Ime in priimek učenca</span>
+          <input
+            id="student-name"
+            name="studentName"
+            type="text"
+            autocomplete="name"
+            maxlength="100"
+            required
+          />
+        </label>
+
+        <label class="form-field" for="class-name">
+          <span>Razred</span>
+          <input
+            id="class-name"
+            name="className"
+            type="text"
+            placeholder="npr. 5. a"
+            maxlength="20"
+            required
+          />
+        </label>
+
+        <p class="cancellation-status" id="cancellation-status" role="status">
+          Preverjanje roka za odjavo ...
+        </p>
+
+        <button class="button button-primary cancellation-submit" id="cancellation-submit" type="submit" disabled>
+          <Mail size={18} /> Pripravi odjavo
+        </button>
+
+        <noscript>
+          <p class="cancellation-noscript">Za preverjanje roka in pripravo odjave mora biti JavaScript omogočen.</p>
+        </noscript>
+      </form>
+
+      <aside class="cancellation-guidance" aria-label="Informacije o odjavi">
+        <div>
+          <Clock3 size={21} />
+          <p><strong>Rok je 8.00</strong><span>Po 8. uri gumb za odjavo istega dne ni več aktiven.</span></p>
+        </div>
+        <div>
+          <ShieldCheck size={21} />
+          <p><strong>Podatki ostanejo pri vas</strong><span>Obrazec pripravi sporočilo v vašem e-poštnem programu.</span></p>
+        </div>
+        <a class="back-home-link" href="/"><ArrowLeft size={17} /> Nazaj na naslovnico</a>
+      </aside>
+    </div>
+  </section>
+</BaseLayout>
+
+<script>
+  import {
+    buildCancellationMailto,
+    getCancellationState,
+  } from '../scripts/meal-cancellation.mjs';
+
+  const form = document.querySelector<HTMLFormElement>('#meal-cancellation-form');
+  const submitButton = document.querySelector<HTMLButtonElement>('#cancellation-submit');
+  const status = document.querySelector<HTMLElement>('#cancellation-status');
+
+  function updateAvailability() {
+    if (!submitButton || !status) return;
+
+    const state = getCancellationState();
+    submitButton.disabled = !state.open;
+    status.dataset.state = state.open ? 'open' : 'closed';
+    status.textContent = state.open
+      ? `Odjavo za danes lahko pošljete do 8.00. Trenutni čas v Mariboru: ${state.timeLabel}.`
+      : `Rok za današnjo odjavo je potekel. Trenutni čas v Mariboru: ${state.timeLabel}.`;
+  }
+
+  form?.addEventListener('submit', (event) => {
+    event.preventDefault();
+    const state = getCancellationState();
+
+    if (!state.open) {
+      updateAvailability();
+      return;
+    }
+
+    const data = new FormData(form);
+    const studentName = String(data.get('studentName') ?? '').trim();
+    const className = String(data.get('className') ?? '').trim();
+
+    if (!studentName || !className) return;
+
+    window.location.href = buildCancellationMailto({ studentName, className });
+  });
+
+  updateAvailability();
+  window.setInterval(updateAvailability, 30_000);
+  document.addEventListener('visibilitychange', updateAvailability);
+</script>

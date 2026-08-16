@@ -9,7 +9,7 @@ import {
   Utensils,
 } from '@lucide/astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { flattenNavigation, importedPages, navigation, routeForSource } from '../lib/site-data';
+import { flattenNavigation, importedPages, navigation } from '../lib/site-data';
 import type { ImportedPage, NavigationItem } from '../types/site';
 
 export function getStaticPaths() {
@@ -32,7 +32,6 @@ const related = section
   : [];
 const isDocument = page.kind === 'document';
 const actionLabel = isDocument ? 'Odpri izvirni dokument' : 'Odpri izvirno stran';
-const menuRoute = routeForSource('https://www.o-pvoranca.mb.edus.si/jedilnik/');
 const pageDescription = page.description || page.title + ' – OŠ Prežihovega Voranca Maribor';
 ---
 
@@ -79,8 +78,8 @@ const pageDescription = page.description || page.title + ' – OŠ Prežihovega 
       <aside class="page-sidebar" aria-label="Povezane vsebine">
         <div class="sidebar-meal">
           <Utensils size={22} />
-          <div><small>Šolska prehrana</small><strong>Jedilnik in odjava obroka</strong></div>
-          <a href={menuRoute}>Odpri <ArrowRight size={15} /></a>
+          <div><small>Šolska prehrana</small><strong>Odjava prehrane za danes</strong></div>
+          <a href="/odjava-prehrane/">Odpri obrazec <ArrowRight size={15} /></a>
         </div>
 
         {related.length > 0 && (

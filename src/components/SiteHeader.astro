@@ -14,20 +14,6 @@ import NavBranch from './NavBranch.astro';
 const primaryNavigation = navigation.slice(0, 4);
 const portalNavigation = navigation.slice(4);
 const aaiRoute = routeForSource('http://ospvmb.splet.arnes.si/wp-admin/');
-
-const cancellationSubject = encodeURIComponent('Odjava prehrane za danes');
-const cancellationBody = encodeURIComponent([
-  'Pozdravljeni,',
-  '',
-  'prosim za odjavo prehrane za danes.',
-  '',
-  'Ime in priimek učenca:',
-  'Razred:',
-  'Obrok: malica / kosilo (izbrišite neustrezno)',
-  '',
-  'Hvala in lep pozdrav.',
-].join('\n'));
-const cancellationHref = 'mailto:info@o-pvoranca.mb.edus.si?subject=' + cancellationSubject + '&body=' + cancellationBody;
 ---
 
 <a class="skip-link" href="#vsebina">Preskoči na vsebino</a>
@@ -53,7 +39,7 @@ const cancellationHref = 'mailto:info@o-pvoranca.mb.edus.si?subject=' + cancella
     </a>
 
     <div class="header-actions">
-      <a class="meal-header-link" href={cancellationHref}>
+      <a class="meal-header-link" href="/odjava-prehrane/">
         <Utensils size={18} />
         <span><small>Hitro opravilo</small><strong>Odjava prehrane</strong></span>
       </a>
@@ -65,6 +51,9 @@ const cancellationHref = 'mailto:info@o-pvoranca.mb.edus.si?subject=' + cancella
     <details class="mobile-navigation">
       <summary aria-label="Odpri glavni meni" title="Meni"><Menu size={23} /></summary>
       <div class="mobile-navigation-panel">
+        <a class="mobile-meal-link" href="/odjava-prehrane/">
+          <Utensils size={18} /> Odjava prehrane
+        </a>
         {primaryNavigation.map((item) => (
           <details class="mobile-nav-group">
             <summary>{item.label}<ChevronDown size={17} /></summary>

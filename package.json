@@ -8,6 +8,7 @@
     "sync:content": "node scripts/sync-content.mjs",
     "build": "astro check && astro build",
     "validate:build": "node scripts/validate-build.mjs",
+    "test:meal-cancellation": "node scripts/test-meal-cancellation.mjs",
     "preview": "astro preview",
     "deploy": "npm run build && wrangler deploy",
     "deploy:temporary": "npm run build && wrangler deploy --temporary"

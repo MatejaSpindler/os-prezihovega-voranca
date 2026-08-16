@@ -18,19 +18,6 @@ import { linkGroups, news, notices } from '../data/links';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { routeForSource } from '../lib/site-data';
 
-const cancellationSubject = encodeURIComponent('Odjava prehrane za danes');
-const cancellationBody = encodeURIComponent([
-  'Pozdravljeni,',
-  '',
-  'prosim za odjavo prehrane za danes.',
-  '',
-  'Ime in priimek učenca:',
-  'Razred:',
-  'Obrok: malica / kosilo (izbrišite neustrezno)',
-  '',
-  'Hvala in lep pozdrav.',
-].join('\n'));
-const cancellationHref = 'mailto:info@o-pvoranca.mb.edus.si?subject=' + cancellationSubject + '&body=' + cancellationBody;
 const totalLinks = linkGroups.reduce((total, group) => total + group.links.length, 0);
 const localRoute = (href: string) => routeForSource(href);
 ---
@@ -55,15 +42,15 @@ const localRoute = (href: string) => routeForSource(href);
           <p class="panel-kicker">Hitro opravilo</p>
           <h2 id="prehrana-naslov">Odjava prehrane za danes</h2>
           <p>
-            Pripravljeno e-sporočilo za odjavo malice ali kosila. Dodajte ime učenca in razred ter ga pošljite šoli.
+            V obrazec vnesite ime učenca in razred. Odjavo za isti dan lahko pripravite do 8.00.
           </p>
           <div class="panel-actions">
-            <a class="button button-light" href={cancellationHref}>
-              Odjavi današnji obrok <ArrowRight size={18} />
+            <a class="button button-light" href="/odjava-prehrane/">
+              Odpri obrazec <ArrowRight size={18} />
             </a>
             <a class="text-link-light" href="tel:+38622341550"><Phone size={16} /> Pokliči tajništvo</a>
           </div>
-          <p class="deadline"><Clock3 size={15} /> Odjavo kosila pošljite najpozneje do 8.00. Odjava malice velja naslednji dan.</p>
+          <p class="deadline"><Clock3 size={15} /> Gumb za današnjo odjavo je na voljo samo do 8.00.</p>
         </div>
       </div>
     </div>
