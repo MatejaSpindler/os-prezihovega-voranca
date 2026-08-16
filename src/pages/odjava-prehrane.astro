@@ -1,17 +1,19 @@
 ---
 import {
   ArrowLeft,
+  CalendarDays,
   Clock3,
   Mail,
   ShieldCheck,
   Utensils,
 } from '@lucide/astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
+import 'flatpickr/dist/flatpickr.min.css';
 ---
 
 <BaseLayout
   title="Odjava prehrane"
-  description="Obrazec za odjavo šolske prehrane za isti dan do 8. ure zjutraj."
+  description="Izberite datum in obrok za odjavo šolske prehrane. Današnjo odjavo je mogoče oddati do 8. ure."
 >
   <section class="page-title-band">
     <div class="shell">
@@ -22,7 +24,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       </nav>
       <p class="eyebrow">Hitro opravilo</p>
       <h1>Odjava prehrane</h1>
-      <p>Odjavo za današnji dan lahko pripravite do 8.00 po lokalnem času v Mariboru.</p>
+      <p>Izberite današnji ali prihodnji delovni dan ter označite, kateri obrok odjavljate.</p>
     </div>
   </section>
 
@@ -32,8 +34,8 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         <div class="cancellation-form-heading">
           <span><Utensils size={24} /></span>
           <div>
-            <p class="panel-kicker">Današnja odjava</p>
-            <h2>Podatki učenca</h2>
+            <p class="panel-kicker">Odjava obroka</p>
+            <h2>Podatki in datum</h2>
           </div>
         </div>
 
@@ -61,8 +63,39 @@ import BaseLayout from '../layouts/BaseLayout.astro';
           />
         </label>
 
+        <fieldset class="meal-choice">
+          <legend>Kaj odjavljate?</legend>
+          <div class="meal-options">
+            <label>
+              <input type="radio" name="meal" value="lunch" checked />
+              <span>Kosilo</span>
+            </label>
+            <label>
+              <input type="radio" name="meal" value="breakfast" />
+              <span>Zajtrk</span>
+            </label>
+            <label>
+              <input type="radio" name="meal" value="both" />
+              <span>Oboje</span>
+            </label>
+          </div>
+        </fieldset>
+
+        <div class="calendar-field">
+          <label for="cancellation-date">Datum odjave</label>
+          <input
+            id="cancellation-date"
+            name="cancellationDate"
+            type="text"
+            placeholder="Izberite datum"
+            aria-describedby="calendar-help"
+            required
+          />
+          <p id="calendar-help"><CalendarDays size={16} /> Vikendi in dela prosti slovenski prazniki niso na voljo.</p>
+        </div>
+
         <p class="cancellation-status" id="cancellation-status" role="status">
-          Preverjanje roka za odjavo ...
+          Izberite datum odjave.
         </p>
 
         <button class="button button-primary cancellation-submit" id="cancellation-submit" type="submit" disabled>
@@ -77,7 +110,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       <aside class="cancellation-guidance" aria-label="Informacije o odjavi">
         <div>
           <Clock3 size={21} />
-          <p><strong>Rok je 8.00</strong><span>Po 8. uri gumb za odjavo istega dne ni več aktiven.</span></p>
+          <p><strong>Današnji rok je 8.00</strong><span>Po 8. uri izberite enega od prihodnjih razpoložljivih dni.</span></p>
         </div>
         <div>
           <ShieldCheck size={21} />
@@ -92,29 +125,85 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 <script>
   import {
     buildCancellationMailto,
+    getDateAvailability,
     getCancellationState,
+    getHolidayCalendarEndDate,
   } from '../scripts/meal-cancellation.mjs';
+  import flatpickr from 'flatpickr';
+  import { Slovenian } from 'flatpickr/dist/l10n/sl.js';
 
   const form = document.querySelector<HTMLFormElement>('#meal-cancellation-form');
   const submitButton = document.querySelector<HTMLButtonElement>('#cancellation-submit');
   const status = document.querySelector<HTMLElement>('#cancellation-status');
+  const dateInput = document.querySelector<HTMLInputElement>('#cancellation-date');
+  let selectedDate = '';
+
+  function calendarDateIso(date: Date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
+  const calendar = dateInput
+    ? flatpickr(dateInput, {
+        inline: true,
+        altInput: true,
+        altFormat: 'j. F Y',
+        dateFormat: 'Y-m-d',
+        minDate: getCancellationState().todayIso,
+        maxDate: getHolidayCalendarEndDate(),
+        locale: Slovenian,
+        disable: [(date) => !getDateAvailability(calendarDateIso(date)).available],
+        onChange: (_dates, dateString) => {
+          selectedDate = dateString;
+          updateAvailability();
+        },
+        onDayCreate: (_dates, _dateString, _instance, dayElement) => {
+          const availability = getDateAvailability(calendarDateIso(dayElement.dateObj));
+          if (!availability.available) dayElement.title = availability.label;
+        },
+      })
+    : null;
 
   function updateAvailability() {
     if (!submitButton || !status) return;
 
-    const state = getCancellationState();
-    submitButton.disabled = !state.open;
-    status.dataset.state = state.open ? 'open' : 'closed';
-    status.textContent = state.open
-      ? `Odjavo za danes lahko pošljete do 8.00. Trenutni čas v Mariboru: ${state.timeLabel}.`
-      : `Rok za današnjo odjavo je potekel. Trenutni čas v Mariboru: ${state.timeLabel}.`;
+    const current = getCancellationState();
+    calendar?.set('minDate', current.todayIso);
+    calendar?.redraw();
+
+    if (!selectedDate) {
+      const todayAvailability = getDateAvailability(current.todayIso);
+      submitButton.disabled = true;
+      status.dataset.state = 'idle';
+      status.textContent = todayAvailability.available
+        ? `${todayAvailability.label} Izberete lahko tudi prihodnji delovni dan.`
+        : todayAvailability.code === 'cutoff'
+          ? `${todayAvailability.label} Izberite prihodnji delovni dan.`
+          : `Danes odjava ni na voljo: ${todayAvailability.label} Izberite prihodnji delovni dan.`;
+      return;
+    }
+
+    const availability = getDateAvailability(selectedDate);
+    if (!availability.available) {
+      calendar?.clear();
+      selectedDate = '';
+      submitButton.disabled = true;
+      status.dataset.state = 'closed';
+      status.textContent = availability.label;
+      return;
+    }
+
+    submitButton.disabled = false;
+    status.dataset.state = 'open';
+    status.textContent = availability.label;
   }
 
   form?.addEventListener('submit', (event) => {
     event.preventDefault();
-    const state = getCancellationState();
-
-    if (!state.open) {
+    const availability = getDateAvailability(selectedDate);
+    if (!availability.available) {
       updateAvailability();
       return;
     }
@@ -122,10 +211,16 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     const data = new FormData(form);
     const studentName = String(data.get('studentName') ?? '').trim();
     const className = String(data.get('className') ?? '').trim();
+    const meal = String(data.get('meal') ?? '');
 
-    if (!studentName || !className) return;
+    if (!studentName || !className || !meal || !selectedDate) return;
 
-    window.location.href = buildCancellationMailto({ studentName, className });
+    window.location.href = buildCancellationMailto({
+      studentName,
+      className,
+      cancellationDate: selectedDate,
+      meal,
+    });
   });
 
   updateAvailability();

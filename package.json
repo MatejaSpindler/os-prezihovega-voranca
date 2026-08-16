@@ -4,8 +4,11 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "predev": "npm run generate:holidays",
     "dev": "astro dev",
     "sync:content": "node scripts/sync-content.mjs",
+    "generate:holidays": "node scripts/generate-holidays.mjs",
+    "prebuild": "npm run generate:holidays",
     "build": "astro check && astro build",
     "validate:build": "node scripts/validate-build.mjs",
     "test:meal-cancellation": "node scripts/test-meal-cancellation.mjs",
@@ -18,11 +21,13 @@
     "@lucide/astro": "^1.31.0",
     "astro": "^7.2.2",
     "cheerio": "^1.2.0",
+    "flatpickr": "^4.6.13",
     "sanitize-html": "^2.17.7",
     "typescript": "^6.0.3"
   },
   "devDependencies": {
     "@types/sanitize-html": "^2.16.1",
+    "date-holidays": "^3.35.0",
     "wrangler": "^4.123.0"
   }
 }

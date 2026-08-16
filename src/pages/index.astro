@@ -40,9 +40,9 @@ const localRoute = (href: string) => routeForSource(href);
         <span class="today-icon"><Utensils size={26} /></span>
         <div>
           <p class="panel-kicker">Hitro opravilo</p>
-          <h2 id="prehrana-naslov">Odjava prehrane za danes</h2>
+          <h2 id="prehrana-naslov">Odjava prehrane</h2>
           <p>
-            V obrazec vnesite ime učenca in razred. Odjavo za isti dan lahko pripravite do 8.00.
+            Izberite datum, učenca in obrok. Današnji obrok lahko odjavite do 8.00, prihodnje delovne dni pa izberete v koledarju.
           </p>
           <div class="panel-actions">
             <a class="button button-light" href="/odjava-prehrane/">
@@ -50,7 +50,7 @@ const localRoute = (href: string) => routeForSource(href);
             </a>
             <a class="text-link-light" href="tel:+38622341550"><Phone size={16} /> Pokliči tajništvo</a>
           </div>
-          <p class="deadline"><Clock3 size={15} /> Gumb za današnjo odjavo je na voljo samo do 8.00.</p>
+          <p class="deadline"><Clock3 size={15} /> Vikendi in dela prosti slovenski prazniki niso na voljo.</p>
         </div>
       </div>
     </div>

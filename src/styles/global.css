@@ -1888,6 +1888,130 @@ h1 {
   outline: none;
 }
 
+.meal-choice {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.meal-choice legend,
+.calendar-field > label {
+  margin-bottom: 8px;
+  font-size: 0.88rem;
+  font-weight: 780;
+}
+
+.meal-options {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+  padding: 5px;
+  background: var(--wash);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+
+.meal-options label {
+  position: relative;
+  min-width: 0;
+}
+
+.meal-options input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.meal-options span {
+  display: grid;
+  min-height: 42px;
+  place-items: center;
+  padding: 7px 10px;
+  color: var(--muted);
+  background: transparent;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.82rem;
+  font-weight: 820;
+}
+
+.meal-options input:checked + span {
+  color: white;
+  background: var(--green);
+}
+
+.meal-options input:focus-visible + span {
+  outline: 3px solid var(--yellow);
+  outline-offset: 2px;
+}
+
+.calendar-field {
+  display: grid;
+}
+
+.calendar-field > input,
+.calendar-field > .flatpickr-input {
+  width: 100%;
+  min-height: 48px;
+  margin-bottom: 12px;
+  padding: 10px 13px;
+  color: var(--ink);
+  background: white;
+  border: 1px solid #aebbb4;
+  border-radius: 4px;
+}
+
+.calendar-field > p {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  margin: 12px 0 0;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.calendar-field .flatpickr-calendar.inline {
+  width: 100%;
+  max-width: 360px;
+  margin-top: 4px;
+  border: 1px solid var(--line);
+  box-shadow: none;
+}
+
+.calendar-field .flatpickr-rContainer,
+.calendar-field .flatpickr-days,
+.calendar-field .dayContainer {
+  width: 100%;
+  min-width: 100%;
+  max-width: 100%;
+}
+
+.calendar-field .flatpickr-day {
+  width: 14.2857%;
+  max-width: none;
+  flex-basis: 14.2857%;
+  border-radius: 4px;
+}
+
+.calendar-field .flatpickr-day.selected,
+.calendar-field .flatpickr-day.selected:hover {
+  background: var(--green);
+  border-color: var(--green);
+}
+
+.calendar-field .flatpickr-day.today {
+  border-color: var(--yellow);
+}
+
+.calendar-field .flatpickr-day.flatpickr-disabled,
+.calendar-field .flatpickr-day.flatpickr-disabled:hover {
+  color: #a8b1ac;
+  background: #f2f4f2;
+  text-decoration: line-through;
+}
+
 .form-field input:focus {
   border-color: var(--green);
   box-shadow: 0 0 0 3px rgba(22, 99, 74, 0.16);
@@ -1980,4 +2104,5 @@ h1 {
   .cancellation-submit {
     width: 100%;
   }
+
 }
