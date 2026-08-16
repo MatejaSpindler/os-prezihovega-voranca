@@ -5,13 +5,20 @@
   "type": "module",
   "scripts": {
     "dev": "astro dev",
+    "sync:content": "node scripts/sync-content.mjs",
     "build": "astro check && astro build",
+    "validate:build": "node scripts/validate-build.mjs",
     "preview": "astro preview"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.4",
     "@lucide/astro": "^1.31.0",
     "astro": "^7.2.2",
+    "cheerio": "^1.2.0",
+    "sanitize-html": "^2.17.7",
     "typescript": "^6.0.3"
+  },
+  "devDependencies": {
+    "@types/sanitize-html": "^2.16.1"
   }
 }

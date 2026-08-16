@@ -1,0 +1,114 @@
+---
+import {
+  ChevronDown,
+  ExternalLink,
+  Mail,
+  MapPin,
+  Menu,
+  Phone,
+  Utensils,
+} from '@lucide/astro';
+import { navigation, routeForSource } from '../lib/site-data';
+import NavBranch from './NavBranch.astro';
+
+const primaryNavigation = navigation.slice(0, 4);
+const portalNavigation = navigation.slice(4);
+const aaiRoute = routeForSource('http://ospvmb.splet.arnes.si/wp-admin/');
+
+const cancellationSubject = encodeURIComponent('Odjava prehrane za danes');
+const cancellationBody = encodeURIComponent([
+  'Pozdravljeni,',
+  '',
+  'prosim za odjavo prehrane za danes.',
+  '',
+  'Ime in priimek učenca:',
+  'Razred:',
+  'Obrok: malica / kosilo (izbrišite neustrezno)',
+  '',
+  'Hvala in lep pozdrav.',
+].join('\n'));
+const cancellationHref = 'mailto:info@o-pvoranca.mb.edus.si?subject=' + cancellationSubject + '&body=' + cancellationBody;
+---
+
+<a class="skip-link" href="#vsebina">Preskoči na vsebino</a>
+
+<div class="utility-bar">
+  <div class="shell utility-inner">
+    <span class="utility-location"><MapPin size={15} /> Gosposvetska 10, Maribor</span>
+    <div class="utility-contact">
+      <a href="tel:+38622341550"><Phone size={15} /> 02 234 15 50</a>
+      <a href="mailto:info@o-pvoranca.mb.edus.si"><Mail size={15} /> Pišite nam</a>
+    </div>
+  </div>
+</div>
+
+<header class="main-header">
+  <div class="shell main-header-row">
+    <a class="brand" href="/" aria-label="OŠ Prežihovega Voranca Maribor – domov">
+      <img src="/images/logo.png" alt="" width="88" height="88" />
+      <span>
+        <strong>OŠ Prežihovega Voranca</strong>
+        <small>Maribor</small>
+      </span>
+    </a>
+
+    <div class="header-actions">
+      <a class="meal-header-link" href={cancellationHref}>
+        <Utensils size={18} />
+        <span><small>Hitro opravilo</small><strong>Odjava prehrane</strong></span>
+      </a>
+      <a class="aai-header-link" href={aaiRoute}>
+        AAI prijava <ExternalLink size={15} />
+      </a>
+    </div>
+
+    <details class="mobile-navigation">
+      <summary aria-label="Odpri glavni meni" title="Meni"><Menu size={23} /></summary>
+      <div class="mobile-navigation-panel">
+        {primaryNavigation.map((item) => (
+          <details class="mobile-nav-group">
+            <summary>{item.label}<ChevronDown size={17} /></summary>
+            <a class="mobile-overview-link" href={item.route}>Pregled: {item.label}</a>
+            <NavBranch items={item.children} />
+          </details>
+        ))}
+        <p class="mobile-portals-title">Portali in projekti</p>
+        <NavBranch items={portalNavigation} />
+      </div>
+    </details>
+  </div>
+
+  <div class="primary-navigation-wrap">
+    <nav class="shell primary-navigation" aria-label="Glavna navigacija">
+      {primaryNavigation.map((item) => (
+        <details class="desktop-nav-menu">
+          <summary>{item.label}<ChevronDown size={16} /></summary>
+          <div class="desktop-nav-popover">
+            <a class="nav-overview-link" href={item.route}>Vse iz sklopa {item.label}</a>
+            <NavBranch items={item.children} />
+          </div>
+        </details>
+      ))}
+    </nav>
+  </div>
+
+  <nav class="portal-navigation" aria-label="Šolski portali in projekti">
+    <div class="shell portal-navigation-inner">
+      {portalNavigation.map((item) => <a href={item.route}>{item.label}</a>)}
+    </div>
+  </nav>
+</header>
+
+<script>
+  document.querySelectorAll<HTMLAnchorElement>('.mobile-navigation-panel a').forEach((link) => {
+    link.addEventListener('click', () => {
+      link.closest('.mobile-navigation')?.removeAttribute('open');
+    });
+  });
+
+  document.addEventListener('click', (event) => {
+    document.querySelectorAll<HTMLDetailsElement>('.desktop-nav-menu[open]').forEach((menu) => {
+      if (!menu.contains(event.target as Node)) menu.removeAttribute('open');
+    });
+  });
+</script>

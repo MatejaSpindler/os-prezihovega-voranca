@@ -1,0 +1,97 @@
+---
+import {
+  ArrowLeft,
+  ArrowRight,
+  ExternalLink,
+  FileDown,
+  House,
+  Link as LinkIcon,
+  Utensils,
+} from '@lucide/astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { flattenNavigation, importedPages, navigation, routeForSource } from '../lib/site-data';
+import type { ImportedPage, NavigationItem } from '../types/site';
+
+export function getStaticPaths() {
+  return importedPages.map((page) => ({
+    params: { slug: page.route.replace(/^\/|\/$/g, '') },
+    props: { page },
+  }));
+}
+
+type Props = { page: ImportedPage };
+const { page } = Astro.props;
+
+function containsSource(item: NavigationItem, sourceUrl: string): boolean {
+  return item.sourceUrl === sourceUrl || item.children.some((child) => containsSource(child, sourceUrl));
+}
+
+const section = navigation.find((item) => containsSource(item, page.sourceUrl));
+const related = section
+  ? flattenNavigation(section.children).filter((item) => item.sourceUrl !== page.sourceUrl).slice(0, 8)
+  : [];
+const isDocument = page.kind === 'document';
+const actionLabel = isDocument ? 'Odpri izvirni dokument' : 'Odpri izvirno stran';
+const menuRoute = routeForSource('https://www.o-pvoranca.mb.edus.si/jedilnik/');
+const pageDescription = page.description || page.title + ' – OŠ Prežihovega Voranca Maribor';
+---
+
+<BaseLayout title={page.title} description={pageDescription}>
+  <section class="page-title-band">
+    <div class="shell">
+      <nav class="breadcrumbs" aria-label="Drobtinice">
+        <a href="/"><House size={15} /> Domov</a>
+        {section && <><span>/</span><a href={section.route}>{section.label}</a></>}
+        <span>/</span><span aria-current="page">{page.title}</span>
+      </nav>
+      <p class="eyebrow">{page.kind === 'content' ? 'Šolska vsebina' : 'Uporabna povezava'}</p>
+      <h1>{page.title}</h1>
+      {page.description && <p>{page.description}</p>}
+    </div>
+  </section>
+
+  <section class="page-content-section">
+    <div class="shell page-content-grid">
+      <article class="page-article">
+        {page.kind === 'content' ? (
+          <div class="imported-content" set:html={page.html} />
+        ) : (
+          <div class="resource-content">
+            <span class="resource-icon">{isDocument ? <FileDown size={32} /> : <LinkIcon size={32} />}</span>
+            <h2>{isDocument ? 'Dokument je pripravljen za ogled' : 'Nadaljujte na povezano storitev'}</h2>
+            <p>
+              {isDocument
+                ? 'Dokument ostaja na uradnem šolskem strežniku, zato boste vedno odprli njegovo najnovejšo različico.'
+                : 'Ta storitev deluje na ločenem spletnem mestu. Odprite jo v novem zavihku in se po potrebi prijavite.'}
+            </p>
+            <a class="button button-primary" href={page.sourceUrl} target="_blank" rel="noreferrer">
+              {actionLabel} <ExternalLink size={18} />
+            </a>
+          </div>
+        )}
+
+        <div class="source-note">
+          <p>Vsebina je bila prenesena in oblikovno prilagojena z uradne šolske strani.</p>
+          <a href={page.sourceUrl} target="_blank" rel="noreferrer">Preveri izvirnik <ExternalLink size={15} /></a>
+        </div>
+      </article>
+
+      <aside class="page-sidebar" aria-label="Povezane vsebine">
+        <div class="sidebar-meal">
+          <Utensils size={22} />
+          <div><small>Šolska prehrana</small><strong>Jedilnik in odjava obroka</strong></div>
+          <a href={menuRoute}>Odpri <ArrowRight size={15} /></a>
+        </div>
+
+        {related.length > 0 && (
+          <nav class="related-navigation" aria-label={'Več iz sklopa ' + section?.label}>
+            <h2>Več: {section?.label}</h2>
+            {related.map((item) => <a href={item.route}>{item.label}<ArrowRight size={15} /></a>)}
+          </nav>
+        )}
+
+        <a class="back-home-link" href="/"><ArrowLeft size={17} /> Nazaj na naslovnico</a>
+      </aside>
+    </div>
+  </section>
+</BaseLayout>

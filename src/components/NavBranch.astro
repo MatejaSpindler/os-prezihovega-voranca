@@ -1,0 +1,19 @@
+---
+import type { NavigationItem } from '../types/site';
+
+type Props = {
+  items: NavigationItem[];
+  depth?: number;
+};
+
+const { items, depth = 0 } = Astro.props;
+---
+
+<ul class="nav-branch" data-depth={depth}>
+  {items.map((item) => (
+    <li>
+      <a href={item.route}>{item.label}</a>
+      {item.children.length > 0 && <Astro.self items={item.children} depth={depth + 1} />}
+    </li>
+  ))}
+</ul>

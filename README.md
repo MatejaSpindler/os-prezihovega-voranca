@@ -22,4 +22,15 @@ Create a production build with:
 
 ```sh
 npm run build
+npm run validate:build
 ```
+
+## Content sync
+
+The source navigation and school-owned pages are imported into local Astro routes. Refresh the cached content with:
+
+```sh
+npm run sync:content
+```
+
+The importer sanitizes remote HTML, rewrites known school destinations to local routes, upgrades school assets to HTTPS, and keeps documents or third-party services behind local gateway pages.

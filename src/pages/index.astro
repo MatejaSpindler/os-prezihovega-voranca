@@ -4,299 +4,219 @@ import {
   Bell,
   BookOpen,
   CalendarDays,
-  Camera,
   ChevronRight,
   Clock3,
-  ExternalLink,
   FileText,
   GraduationCap,
   Mail,
   MapPin,
-  Menu,
   Phone,
   Search,
   Utensils,
-  Users,
 } from '@lucide/astro';
-import { linkGroups, news, notices, supportingLinks } from '../data/links';
-import '../styles/global.css';
+import { linkGroups, news, notices } from '../data/links';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { routeForSource } from '../lib/site-data';
 
 const cancellationSubject = encodeURIComponent('Odjava prehrane za danes');
-const cancellationBody = encodeURIComponent(`Pozdravljeni,
-
-prosim za odjavo prehrane za danes.
-
-Ime in priimek učenca:
-Razred:
-Obrok: malica / kosilo (izbrišite neustrezno)
-
-Hvala in lep pozdrav.`);
-const cancellationHref = `mailto:info@o-pvoranca.mb.edus.si?subject=${cancellationSubject}&body=${cancellationBody}`;
+const cancellationBody = encodeURIComponent([
+  'Pozdravljeni,',
+  '',
+  'prosim za odjavo prehrane za danes.',
+  '',
+  'Ime in priimek učenca:',
+  'Razred:',
+  'Obrok: malica / kosilo (izbrišite neustrezno)',
+  '',
+  'Hvala in lep pozdrav.',
+].join('\n'));
+const cancellationHref = 'mailto:info@o-pvoranca.mb.edus.si?subject=' + cancellationSubject + '&body=' + cancellationBody;
 const totalLinks = linkGroups.reduce((total, group) => total + group.links.length, 0);
+const localRoute = (href: string) => routeForSource(href);
 ---
 
-<!doctype html>
-<html lang="sl">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width" />
-    <meta
-      name="description"
-      content="Osnovna šola Prežihovega Voranca Maribor – obvestila, urniki, jedilnik, dejavnosti in pomembne povezave na enem mestu."
-    />
-    <meta name="theme-color" content="#16634a" />
-    <link rel="icon" type="image/png" href="/images/logo.png" />
-    <title>OŠ Prežihovega Voranca Maribor</title>
-  </head>
-  <body>
-    <a class="skip-link" href="#vsebina">Preskoči na vsebino</a>
+<BaseLayout
+  title="OŠ Prežihovega Voranca Maribor"
+  description="Obvestila, urniki, jedilnik, dejavnosti in prenovljene šolske vsebine na enem mestu."
+>
+  <section class="intro-band" id="vrh">
+    <div class="shell intro-grid">
+      <div class="intro-copy">
+        <p class="eyebrow">Znanje. Spoštovanje. Radovednost.</p>
+        <h1>Osnovna šola<br />Prežihovega Voranca Maribor</h1>
+        <p class="intro-lead">
+          Hiter dostop do aktualnih obvestil, šolskih gradiv in vseh prenovljenih vsebin za učence ter starše.
+        </p>
+      </div>
 
-    <div class="utility-bar">
-      <div class="shell utility-inner">
-        <span class="utility-location"><MapPin size={15} /> Gosposvetska 10, Maribor</span>
-        <div class="utility-contact">
-          <a href="tel:+38622341550"><Phone size={15} /> 02 234 15 50</a>
-          <a href="mailto:info@o-pvoranca.mb.edus.si"><Mail size={15} /> Pišite nam</a>
+      <div class="today-panel" aria-labelledby="prehrana-naslov">
+        <span class="today-icon"><Utensils size={26} /></span>
+        <div>
+          <p class="panel-kicker">Hitro opravilo</p>
+          <h2 id="prehrana-naslov">Odjava prehrane za danes</h2>
+          <p>
+            Pripravljeno e-sporočilo za odjavo malice ali kosila. Dodajte ime učenca in razred ter ga pošljite šoli.
+          </p>
+          <div class="panel-actions">
+            <a class="button button-light" href={cancellationHref}>
+              Odjavi današnji obrok <ArrowRight size={18} />
+            </a>
+            <a class="text-link-light" href="tel:+38622341550"><Phone size={16} /> Pokliči tajništvo</a>
+          </div>
+          <p class="deadline"><Clock3 size={15} /> Odjavo kosila pošljite najpozneje do 8.00. Odjava malice velja naslednji dan.</p>
         </div>
       </div>
     </div>
+  </section>
 
-    <header class="site-header">
-      <div class="shell header-inner">
-        <a class="brand" href="#vrh" aria-label="OŠ Prežihovega Voranca Maribor – domov">
-          <img src="/images/logo.png" alt="" width="88" height="88" />
-          <span>
-            <strong>OŠ Prežihovega Voranca</strong>
-            <small>Maribor</small>
-          </span>
+  <section class="quick-band" aria-label="Pogoste povezave">
+    <div class="shell quick-grid">
+      <a class="quick-link quick-green" href={localRoute('https://ospvmb.splet.arnes.si/files/2025/11/Urnik_Oddelki_2025_2026.pdf')}>
+        <span><CalendarDays size={23} /></span>
+        <div><small>Organizacija pouka</small><strong>Urnik 2025/2026</strong></div>
+        <ChevronRight size={19} />
+      </a>
+      <a class="quick-link quick-yellow" href={localRoute('https://www.o-pvoranca.mb.edus.si/jedilnik/')}>
+        <span><Utensils size={23} /></span>
+        <div><small>Šolska prehrana</small><strong>Jedilnik</strong></div>
+        <ChevronRight size={19} />
+      </a>
+      <a class="quick-link quick-coral" href={localRoute('https://www.o-pvoranca.mb.edus.si/pisno-ocenjevanje-znanja/')}>
+        <span><FileText size={23} /></span>
+        <div><small>Pouk</small><strong>Ocenjevanja znanja</strong></div>
+        <ChevronRight size={19} />
+      </a>
+      <a class="quick-link quick-blue" href={localRoute('https://www.o-pvoranca.mb.edus.si/spletne-ucilnice/')}>
+        <span><GraduationCap size={23} /></span>
+        <div><small>Učenje na spletu</small><strong>Spletne učilnice</strong></div>
+        <ChevronRight size={19} />
+      </a>
+    </div>
+  </section>
+
+  <section class="notice-section" id="obvestila">
+    <div class="shell notice-layout">
+      <div class="section-heading">
+        <p class="eyebrow">Na enem mestu</p>
+        <h2>Pomembno ta hip</h2>
+      </div>
+      <div class="notice-list">
+        {notices.map((notice) => (
+          <a href={localRoute(notice.href)}>
+            <span class="notice-icon"><Bell size={19} /></span>
+            <strong>{notice.label}</strong>
+            <ArrowRight size={18} />
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="news-section" id="novice">
+    <div class="shell">
+      <div class="section-heading heading-row">
+        <div>
+          <p class="eyebrow">Utrip na šoli</p>
+          <h2>Najnovejše novice</h2>
+        </div>
+        <a class="section-link" href={localRoute('https://www.o-pvoranca.mb.edus.si/page/2/?et_blog')}>
+          Starejši vnosi <ArrowRight size={17} />
         </a>
-
-        <nav class="desktop-nav" aria-label="Glavna navigacija">
-          <a href="#obvestila">Obvestila</a>
-          <a href="#novice">Novice</a>
-          <a href="#povezave">Vse povezave</a>
-          <a class="nav-login" href="http://ospvmb.splet.arnes.si/wp-admin/" target="_blank" rel="noreferrer">
-            AAI prijava <ExternalLink size={15} />
-          </a>
-        </nav>
-
-        <details class="mobile-menu">
-          <summary aria-label="Odpri glavni meni" title="Meni"><Menu size={23} /></summary>
-          <nav aria-label="Mobilna navigacija">
-            <a href="#obvestila">Obvestila</a>
-            <a href="#novice">Novice</a>
-            <a href="#povezave">Vse povezave</a>
-            <a href="http://ospvmb.splet.arnes.si/wp-admin/" target="_blank" rel="noreferrer">AAI prijava</a>
-          </nav>
-        </details>
       </div>
-    </header>
 
-    <main id="vsebina">
-      <section class="intro-band" id="vrh">
-        <div class="shell intro-grid">
-          <div class="intro-copy">
-            <p class="eyebrow">Znanje. Spoštovanje. Radovednost.</p>
-            <h1>Osnovna šola<br />Prežihovega Voranca Maribor</h1>
-            <p class="intro-lead">
-              Hiter dostop do aktualnih obvestil, šolskih gradiv in storitev za učence ter starše.
-            </p>
-          </div>
-
-          <div class="today-panel" aria-labelledby="prehrana-naslov">
-            <span class="today-icon"><Utensils size={26} /></span>
-            <div>
-              <p class="panel-kicker">Hitro opravilo</p>
-              <h2 id="prehrana-naslov">Odjava prehrane za danes</h2>
-              <p>
-                Pripravljeno e-sporočilo za odjavo malice ali kosila. Dodajte ime učenca in razred ter ga pošljite šoli.
-              </p>
-              <div class="panel-actions">
-                <a class="button button-light" href={cancellationHref}>
-                  Odjavi današnji obrok <ArrowRight size={18} />
-                </a>
-                <a class="text-link-light" href="tel:+38622341550"><Phone size={16} /> Pokliči tajništvo</a>
-              </div>
-              <p class="deadline"><Clock3 size={15} /> Odjavo kosila pošljite najpozneje do 8.00. Odjava malice velja naslednji dan.</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section class="quick-band" aria-label="Pogoste povezave">
-        <div class="shell quick-grid">
-          <a class="quick-link quick-green" href="https://ospvmb.splet.arnes.si/files/2025/11/Urnik_Oddelki_2025_2026.pdf" target="_blank" rel="noreferrer">
-            <span><CalendarDays size={23} /></span>
-            <div><small>Organizacija pouka</small><strong>Urnik 2025/2026</strong></div>
-            <ChevronRight size={19} />
-          </a>
-          <a class="quick-link quick-yellow" href="https://www.o-pvoranca.mb.edus.si/jedilnik/" target="_blank" rel="noreferrer">
-            <span><Utensils size={23} /></span>
-            <div><small>Šolska prehrana</small><strong>Jedilnik</strong></div>
-            <ChevronRight size={19} />
-          </a>
-          <a class="quick-link quick-coral" href="https://www.o-pvoranca.mb.edus.si/pisno-ocenjevanje-znanja/" target="_blank" rel="noreferrer">
-            <span><FileText size={23} /></span>
-            <div><small>Pouk</small><strong>Ocenjevanja znanja</strong></div>
-            <ChevronRight size={19} />
-          </a>
-          <a class="quick-link quick-blue" href="https://www.o-pvoranca.mb.edus.si/spletne-ucilnice/" target="_blank" rel="noreferrer">
-            <span><GraduationCap size={23} /></span>
-            <div><small>Učenje na spletu</small><strong>Spletne učilnice</strong></div>
-            <ChevronRight size={19} />
-          </a>
-        </div>
-      </section>
-
-      <section class="notice-section" id="obvestila">
-        <div class="shell notice-layout">
-          <div class="section-heading">
-            <p class="eyebrow">Na enem mestu</p>
-            <h2>Pomembno ta hip</h2>
-          </div>
-          <div class="notice-list">
-            {notices.map((notice) => (
-              <a href={notice.href} target="_blank" rel="noreferrer">
-                <span class="notice-icon"><Bell size={19} /></span>
-                <strong>{notice.label}</strong>
-                <ArrowRight size={18} />
+      <div class="news-grid">
+        {news.map((item, index) => (
+          <article class:list={["news-card", { featured: index === 0 }]}>
+            {item.image ? (
+              <a class="news-image" href={localRoute(item.href)} aria-label={'Preberi: ' + item.title}>
+                <img src={item.image} alt="" loading={index === 0 ? 'eager' : 'lazy'} />
               </a>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section class="news-section" id="novice">
-        <div class="shell">
-          <div class="section-heading heading-row">
-            <div>
-              <p class="eyebrow">Utrip na šoli</p>
-              <h2>Najnovejše novice</h2>
+            ) : (
+              <div class="news-placeholder" aria-hidden="true"><BookOpen size={30} /></div>
+            )}
+            <div class="news-body">
+              <time>{item.date}</time>
+              <h3><a href={localRoute(item.href)}>{item.title}</a></h3>
+              <p>{item.excerpt}</p>
+              <a class="card-link" href={localRoute(item.href)}>
+                Preberi več <ArrowRight size={16} />
+              </a>
             </div>
-            <a class="section-link" href="https://www.o-pvoranca.mb.edus.si/page/2/?et_blog" target="_blank" rel="noreferrer">
-              Starejši vnosi <ArrowRight size={17} />
-            </a>
-          </div>
-
-          <div class="news-grid">
-            {news.map((item, index) => (
-              <article class:list={["news-card", { featured: index === 0 }]}>
-                {item.image ? (
-                  <a class="news-image" href={item.href} target="_blank" rel="noreferrer" aria-label={`Preberi: ${item.title}`}>
-                    <img src={item.image} alt="" loading={index === 0 ? 'eager' : 'lazy'} />
-                  </a>
-                ) : (
-                  <div class="news-placeholder" aria-hidden="true"><BookOpen size={30} /></div>
-                )}
-                <div class="news-body">
-                  <time>{item.date}</time>
-                  <h3><a href={item.href} target="_blank" rel="noreferrer">{item.title}</a></h3>
-                  <p>{item.excerpt}</p>
-                  <a class="card-link" href={item.href} target="_blank" rel="noreferrer">
-                    Preberi več <ArrowRight size={16} />
-                  </a>
-                </div>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section class="directory-section" id="povezave">
-        <div class="shell">
-          <div class="directory-header">
-            <div class="section-heading">
-              <p class="eyebrow">{totalLinks} uporabnih naslovov</p>
-              <h2>Vse šolske povezave</h2>
-              <p>Celoten nabor povezav z obstoječe spletne strani, razvrščen po temah.</p>
-            </div>
-            <label class="search-box" for="link-search">
-              <Search size={20} />
-              <input id="link-search" type="search" placeholder="Poišči urnik, knjižnico, prehrano …" autocomplete="off" />
-            </label>
-          </div>
-
-          <p class="search-empty" id="search-empty" hidden>Za ta iskalni niz ni povezav.</p>
-          <div class="directory-grid" id="link-directory">
-            {linkGroups.map((group) => (
-              <section class="link-group" data-link-group>
-                <h3>{group.title}</h3>
-                <ul>
-                  {group.links.map((link) => (
-                    <li data-directory-link data-search={`${group.title} ${link.label}`.toLocaleLowerCase('sl')}>
-                      <a href={link.href} target="_blank" rel="noreferrer">
-                        <span>{link.label}</span><ExternalLink size={15} />
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </section>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section class="contact-section">
-        <div class="shell contact-layout">
-          <div>
-            <p class="eyebrow">Kontakt</p>
-            <h2>Tu smo za vas.</h2>
-            <p>Za informacije o pouku, prehrani in dejavnostih se obrnite na tajništvo šole.</p>
-          </div>
-          <div class="contact-actions">
-            <a href="tel:+38622341550"><Phone size={21} /><span><small>Telefon</small><strong>02 234 15 50</strong></span></a>
-            <a href="mailto:info@o-pvoranca.mb.edus.si"><Mail size={21} /><span><small>E-pošta</small><strong>info@o-pvoranca.mb.edus.si</strong></span></a>
-            <a href="https://www.google.com/maps/search/?api=1&query=Gosposvetska+10%2C+2000+Maribor" target="_blank" rel="noreferrer"><MapPin size={21} /><span><small>Naslov</small><strong>Gosposvetska 10, Maribor</strong></span></a>
-          </div>
-        </div>
-      </section>
-    </main>
-
-    <footer class="site-footer">
-      <div class="shell footer-grid">
-        <div class="footer-brand">
-          <img src="/images/logo.png" alt="" width="68" height="68" />
-          <div><strong>OŠ Prežihovega Voranca Maribor</strong><span>Gosposvetska 10, 2000 Maribor</span></div>
-        </div>
-        <div class="footer-links">
-          {supportingLinks.map((link) => <a href={link.href} target="_blank" rel="noreferrer">{link.label}</a>)}
-        </div>
-        <div class="social-links" aria-label="Družbena omrežja">
-          <a href="https://www.instagram.com/ospvmb/" target="_blank" rel="noreferrer" title="Instagram" aria-label="Instagram"><Camera size={21} /></a>
-          <a href="https://www.facebook.com/profile.php?id=61552588658829" target="_blank" rel="noreferrer" title="Facebook" aria-label="Facebook"><Users size={21} /></a>
-        </div>
+          </article>
+        ))}
       </div>
-      <div class="shell footer-bottom">
-        <span>© {new Date().getFullYear()} OŠ Prežihovega Voranca Maribor</span>
-        <span>Preglednejša pot do obstoječih šolskih vsebin.</span>
+    </div>
+  </section>
+
+  <section class="directory-section" id="povezave">
+    <div class="shell">
+      <div class="directory-header">
+        <div class="section-heading">
+          <p class="eyebrow">{totalLinks} prenovljenih naslovov</p>
+          <h2>Vse šolske povezave</h2>
+          <p>Celoten nabor povezav z obstoječe spletne strani, zdaj povezan z lokalnimi prenovljenimi stranmi.</p>
+        </div>
+        <label class="search-box" for="link-search">
+          <Search size={20} />
+          <input id="link-search" type="search" placeholder="Poišči urnik, knjižnico, prehrano …" autocomplete="off" />
+        </label>
       </div>
-    </footer>
 
-    <script>
-      const searchInput = document.querySelector<HTMLInputElement>('#link-search');
-      const directoryLinks = [...document.querySelectorAll<HTMLElement>('[data-directory-link]')];
-      const linkGroups = [...document.querySelectorAll<HTMLElement>('[data-link-group]')];
-      const emptyState = document.querySelector<HTMLElement>('#search-empty');
+      <p class="search-empty" id="search-empty" hidden>Za ta iskalni niz ni povezav.</p>
+      <div class="directory-grid" id="link-directory">
+        {linkGroups.map((group) => (
+          <section class="link-group" data-link-group>
+            <h3>{group.title}</h3>
+            <ul>
+              {group.links.map((link) => (
+                <li data-directory-link data-search={(group.title + ' ' + link.label).toLocaleLowerCase('sl')}>
+                  <a href={localRoute(link.href)}>
+                    <span>{link.label}</span><ArrowRight size={15} />
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ))}
+      </div>
+    </div>
+  </section>
 
-      searchInput?.addEventListener('input', () => {
-        const term = searchInput.value.trim().toLocaleLowerCase('sl');
+  <section class="contact-section">
+    <div class="shell contact-layout">
+      <div>
+        <p class="eyebrow">Kontakt</p>
+        <h2>Tu smo za vas.</h2>
+        <p>Za informacije o pouku, prehrani in dejavnostih se obrnite na tajništvo šole.</p>
+      </div>
+      <div class="contact-actions">
+        <a href="tel:+38622341550"><Phone size={21} /><span><small>Telefon</small><strong>02 234 15 50</strong></span></a>
+        <a href="mailto:info@o-pvoranca.mb.edus.si"><Mail size={21} /><span><small>E-pošta</small><strong>info@o-pvoranca.mb.edus.si</strong></span></a>
+        <a href="https://www.google.com/maps/search/?api=1&query=Gosposvetska+10%2C+2000+Maribor" target="_blank" rel="noreferrer"><MapPin size={21} /><span><small>Naslov</small><strong>Gosposvetska 10, Maribor</strong></span></a>
+      </div>
+    </div>
+  </section>
 
-        directoryLinks.forEach((item) => {
-          item.hidden = !item.dataset.search?.includes(term);
-        });
+  <script>
+    const searchInput = document.querySelector<HTMLInputElement>('#link-search');
+    const directoryLinks = [...document.querySelectorAll<HTMLElement>('[data-directory-link]')];
+    const linkGroups = [...document.querySelectorAll<HTMLElement>('[data-link-group]')];
+    const emptyState = document.querySelector<HTMLElement>('#search-empty');
 
-        linkGroups.forEach((group) => {
-          group.hidden = !group.querySelector('[data-directory-link]:not([hidden])');
-        });
+    searchInput?.addEventListener('input', () => {
+      const term = searchInput.value.trim().toLocaleLowerCase('sl');
 
-        if (emptyState) {
-          emptyState.hidden = directoryLinks.some((item) => !item.hidden);
-        }
+      directoryLinks.forEach((item) => {
+        item.hidden = !item.dataset.search?.includes(term);
       });
 
-      document.querySelectorAll<HTMLAnchorElement>('.mobile-menu a').forEach((link) => {
-        link.addEventListener('click', () => link.closest('details')?.removeAttribute('open'));
+      linkGroups.forEach((group) => {
+        group.hidden = !group.querySelector('[data-directory-link]:not([hidden])');
       });
-    </script>
-  </body>
-</html>
+
+      if (emptyState) {
+        emptyState.hidden = directoryLinks.some((item) => !item.hidden);
+      }
+    });
+  </script>
+</BaseLayout>
